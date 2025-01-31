@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>诞生！</title>
+    <url>/2025/01/30/test/</url>
+    <content><![CDATA[<h1 id="诞生！"><a href="#诞生！" class="headerlink" title="诞生！"></a>诞生！</h1><p>2025年1月30日，在经历了漫长而曲折的道路后，网站成功运行，希望Kiwi以后能积极写东西，不断扩充网站的资料！</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>test</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo部署</title>
+    <url>/2025/01/30/Hexo%E9%83%A8%E7%BD%B2/</url>
+    <content><![CDATA[<h1 id="Hexo部署笔记"><a href="#Hexo部署笔记" class="headerlink" title="Hexo部署笔记"></a>Hexo部署笔记</h1><h3 id="1-什么是Hexo"><a href="#1-什么是Hexo" class="headerlink" title="1.什么是Hexo"></a>1.什么是Hexo</h3><p>Hexo是一个快速、简洁且高效的博客框架，它允许用户使用Markdown（或其他渲染引擎）编写文章，然后生成静态网页，这些网页可以部署到任何支持静态文件的服务器上。Hexo基于Node.js，这使得它在处理大量网页时非常高效。你现在看到的网站就是利用Hexo框架进行开发的~<br>Hexo的主要特点包括：</p>
+<ol>
+<li><strong>快速生成静态网页</strong>：Hexo使用缓存机制来提高生成速度，即使是大量文件也可以快速生成。</li>
+<li><strong>插件和主题系统</strong>：Hexo支持大量的插件和主题，用户可以根据自己的需求定制博客的外观和功能。</li>
+<li><strong>一键部署</strong>：Hexo支持多种部署方式，可以轻松将网站部署到GitHub Pages、Heroku或其他平台。</li>
+<li><strong>本地预览</strong>：在生成静态网页之前，用户可以在本地预览博客的外观和功能。</li>
+<li><strong>多语言支持</strong>：Hexo支持多语言，可以创建不同语言的博客。</li>
+<li><strong>自定义性高</strong>：用户可以通过修改主题和插件来定制自己的博客，以满足个性化的需求。<br>Hexo的安装和使用相对简单，对于熟悉命令行操作和基本的Node.js知识的用户来说，是一个不错的选择。</li>
+</ol>
+<h3 id="2-如何安装Hexo"><a href="#2-如何安装Hexo" class="headerlink" title="2.如何安装Hexo"></a>2.如何安装Hexo</h3><h5 id="可能出现的问题：权限不足"><a href="#可能出现的问题：权限不足" class="headerlink" title="可能出现的问题：权限不足"></a>可能出现的问题：权限不足</h5><p>出现上述的原因可能是因为直接使用<em>PowerShell</em>终端进行指令控制时没有足够的权限执行脚本，一种可行的解决办法为修改系统对于<em>PowerShell</em>脚本的管理策略，具体实现办法为：</p>
+<ol>
+<li><p>搜索<em>PowerShell</em>并选择以管理员身份运行</p>
+</li>
+<li><p>使用如下命令将计算机上的执行策略更改为<strong>RemoteSigned</strong></p>
+ <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">set-ExecutionPolicy</span> RemoteSigne</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查询计算机对于PowerShell脚本的执行策略，验证是否更改成功</p>
+ <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="built_in">get-Executionpolicy</span></span><br></pre></td></tr></table></figure>
+
+<p> 如果返回<strong>RemoteSigned</strong>则为修改成功</p>
+</li>
+</ol>
+<h3 id="3-如何在Hexo下创作"><a href="#3-如何在Hexo下创作" class="headerlink" title="3.如何在Hexo下创作"></a>3.如何在Hexo下创作</h3><h4 id="3-1常用指令"><a href="#3-1常用指令" class="headerlink" title="3.1常用指令"></a>3.1常用指令</h4><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">hexo clean <span class="comment"># clean the cache and public folder</span></span><br><span class="line">hexo g <span class="comment"># short for hexo generate</span></span><br><span class="line">hexo d <span class="comment"># short for hexo deploy, submit files to git</span></span><br><span class="line">hexo s <span class="comment"># open local server to preview your blogs</span></span><br></pre></td></tr></table></figure>
+
+<p>一般先采用<code>hexo clean</code>清理缓存，然后<code>hexo g</code>编译，然后<code>hexo s</code>生成网站页面进行预览，检查无误后就可以用<code>hexo d</code>将网站页面部署</p>
+<h3 id="3-2更改主题themes"><a href="#3-2更改主题themes" class="headerlink" title="3.2更改主题themes"></a>3.2更改主题themes</h3><p>安装喜欢的主题，然后将主题放在<code>source</code>文件夹中（最好选择利用gitBash直接拉去，方便更新）这里选择使用了Next作为主题，然后提交确认命令</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">hexo config themes next</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3创建新文章"><a href="#3-3创建新文章" class="headerlink" title="3.3创建新文章"></a>3.3创建新文章</h3><p>在文件夹根目录利用命令创建新的文章，将会被存储在<code>source</code>文件夹中</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">hexo new &lt;title&gt;</span><br></pre></td></tr></table></figure>
+<p>也可以通过编辑<code>source/_posts</code>文件夹下的<code>.md</code>文件来创建新的文章，在markdown文件头部添加必要的元数据，如：</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: 文章标题</span><br><span class="line">date: 2025-01-30 23:54:54</span><br><span class="line">categories:</span><br><span class="line"><span class="bullet">-</span> 分类1</span><br><span class="line"><span class="bullet">-</span> 分类2</span><br><span class="line">tags:</span><br><span class="line"><span class="bullet">-</span> 标签1</span><br><span class="line"><span class="bullet">-</span> 标签2</span><br><span class="line"></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4添加图片"><a href="#3-4添加图片" class="headerlink" title="3.4添加图片"></a>3.4添加图片</h3><p>在文章中插入图片，需要将图片放入<code>source/images</code>文件夹中，然后在markdown文件中引用图片，如：</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">图片描述</span>](<span class="link">images/图片名称.jpg</span>)</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ROS-URDF模型搭建</title>
+    <url>/2025/01/31/ROS-urdf%E6%A8%A1%E5%9E%8B%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<h1 id="ROS-URDF模型搭建"><a href="#ROS-URDF模型搭建" class="headerlink" title="ROS-URDF模型搭建"></a>ROS-URDF模型搭建</h1><h2 id="URDF介绍"><a href="#URDF介绍" class="headerlink" title="URDF介绍"></a>URDF介绍</h2><p>URDF（Unified Robot Description Format）是一种XML格式的机器人描述语言，用于描述机器人模型的结构和功能。URDF文件包含机器人模型的几何形状、物理属性、连接关系、控制器、传感器、插件等信息。URDF文件可以被ROS解析器解析，并由ROS系统中的各个模块使用。</p>
+<h2 id="URDF模型搭建"><a href="#URDF模型搭建" class="headerlink" title="URDF模型搭建"></a>URDF模型搭建</h2><p>我们将采用我们熟悉的建模工具SolidWorks来创建URDF模型。首先，我们需要安装插件sw2urdf，该插件可以将SolidWorks模型转换为URDF模型。</p>
+<h3 id="安装sw2urdf插件"><a href="#安装sw2urdf插件" class="headerlink" title="安装sw2urdf插件"></a>安装sw2urdf插件</h3><p>安装地址：<a href="http://wiki.ros.org/sw_urdf_exporter">http://wiki.ros.org/sw_urdf_exporter</a></p>
+<p>安装流程网络上有大量资料，这里不作赘述。虽然sw2urdf插件的官方文档中并为提及是否支持2022以后的版本（或者是我没有仔细阅读），但我在使用SW2022版本时并没有遇到任何问题。</p>
+<h3 id="坐标系设置"><a href="#坐标系设置" class="headerlink" title="坐标系设置"></a>坐标系设置</h3><p>在SolidWorks中，我们可以将坐标轴设置成与DH参数一致，这样旋转角度与DH参数体系中的旋转角度一致。在设置旋转轴和坐标系时需要注意，<strong>所有的坐标系和旋转轴都是需要添加在装配体中而不是添加在各个零件上</strong>，将坐标系保存在零件中不会导致最终ROS模型中TF树的正确性，但是会使得模型贴图混乱，所有零件满天飞。</p>
+<h2 id="URDF文件"><a href="#URDF文件" class="headerlink" title="URDF文件"></a>URDF文件</h2><p>urdf文件有着类似xml的树状结构，比如</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">robot</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">link</span>&gt;</span></span><br><span class="line">		...</span><br><span class="line">	<span class="tag">&lt;/<span class="name">link</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">link</span>&gt;</span></span><br><span class="line">		...</span><br><span class="line">	<span class="tag">&lt;/<span class="name">link</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">joint</span>&gt;</span></span><br><span class="line">		...</span><br><span class="line">	<span class="tag">&lt;/<span class="name">joint</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">robot</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>urdf中不同的link之间通过joint相连，joint定义了各个link之间的相对位置和姿态关系。</p>
+]]></content>
+      <categories>
+        <category>机器人学</category>
+      </categories>
+      <tags>
+        <tag>ROS</tag>
+      </tags>
+  </entry>
+</search>
