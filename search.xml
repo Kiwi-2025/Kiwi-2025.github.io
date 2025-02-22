@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>诞生！</title>
-    <url>/2025/01/30/test/</url>
-    <content><![CDATA[<h1 id="诞生！"><a href="#诞生！" class="headerlink" title="诞生！"></a>诞生！</h1><p>2025年1月30日，在经历了漫长而曲折的道路后，网站成功运行，希望Kiwi以后能积极写东西，不断扩充网站的资料！</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>test</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Hexo部署</title>
     <url>/2025/01/30/Hexo%E9%83%A8%E7%BD%B2/</url>
     <content><![CDATA[<h1 id="Hexo部署笔记"><a href="#Hexo部署笔记" class="headerlink" title="Hexo部署笔记"></a>Hexo部署笔记</h1><h3 id="1-什么是Hexo"><a href="#1-什么是Hexo" class="headerlink" title="1.什么是Hexo"></a>1.什么是Hexo</h3><p>Hexo是一个快速、简洁且高效的博客框架，它允许用户使用Markdown（或其他渲染引擎）编写文章，然后生成静态网页，这些网页可以部署到任何支持静态文件的服务器上。Hexo基于Node.js，这使得它在处理大量网页时非常高效。你现在看到的网站就是利用Hexo框架进行开发的~<br>Hexo的主要特点包括：</p>
@@ -76,6 +64,18 @@
       </categories>
       <tags>
         <tag>ROS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>诞生！</title>
+    <url>/2025/01/30/test/</url>
+    <content><![CDATA[<h1 id="诞生！"><a href="#诞生！" class="headerlink" title="诞生！"></a>诞生！</h1><p>2025年1月30日，在经历了漫长而曲折的道路后，网站成功运行，希望Kiwi以后能积极写东西，不断扩充网站的资料！</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>test</tag>
       </tags>
   </entry>
 </search>
