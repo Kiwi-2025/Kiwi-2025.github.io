@@ -1,0 +1,33 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { formatDate, getAllPosts, getTags, routeLabel, slugFromId } from "@/lib/blog";
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  return getTags(posts).map((tag) => ({
+    params: { tag: tag.name },
+    props: { tag: tag.name, posts: posts.filter((post) => post.data.tags.includes(tag.name)) }
+  }));
+}
+
+const { tag, posts } = Astro.props;
+const label = tag ?? routeLabel(Astro.params.tag);
+---
+
+<BaseLayout title={`Tag: ${label}`}>
+  <section class="shell page-title">
+    <p class="eyebrow">Tag</p>
+    <h1>#{label}</h1>
+  </section>
+  <section class="shell post-list" aria-label="Notes with tag">
+    {posts.map((post) => (
+      <article class="post-item">
+        <a href={`/blog/${slugFromId(post.id)}/`}>
+          <span>{formatDate(post.data.date)}</span>
+          <strong>{post.data.title}</strong>
+          <p>{post.data.description ?? "Markdown technical note."}</p>
+        </a>
+      </article>
+    ))}
+  </section>
+</BaseLayout>

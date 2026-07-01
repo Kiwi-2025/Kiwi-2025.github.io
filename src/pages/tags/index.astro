@@ -1,0 +1,21 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { getAllPosts, getTags, routePart } from "@/lib/blog";
+
+const tags = getTags(await getAllPosts());
+---
+
+<BaseLayout title="Tags">
+  <section class="shell page-title">
+    <p class="eyebrow">Tags</p>
+    <h1>Tags</h1>
+  </section>
+  <section class="shell term-grid" aria-label="All tags">
+    {tags.map((tag) => (
+      <a href={`/tags/${routePart(tag.name)}/`}>
+        <span>#{tag.name}</span>
+        <small>{tag.count} notes</small>
+      </a>
+    ))}
+  </section>
+</BaseLayout>

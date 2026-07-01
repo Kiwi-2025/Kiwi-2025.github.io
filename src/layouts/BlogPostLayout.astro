@@ -1,0 +1,33 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import { formatDate, routePart, type BlogPost } from "@/lib/blog";
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const description = post.data.description ?? `${post.data.title} - ${formatDate(post.data.date)}`;
+---
+
+<BaseLayout title={post.data.title} description={description}>
+  <article class="article-shell">
+    <header class="article-header">
+      <p class="eyebrow">{formatDate(post.data.date)}</p>
+      <h1>{post.data.title}</h1>
+      <div class="term-row" aria-label="Categories and tags">
+        {post.data.categories.map((category) => (
+          <a href={`/categories/${routePart(category)}/`}>{category}</a>
+        ))}
+        {post.data.tags.map((tag) => (
+          <a href={`/tags/${routePart(tag)}/`}>#{tag}</a>
+        ))}
+      </div>
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

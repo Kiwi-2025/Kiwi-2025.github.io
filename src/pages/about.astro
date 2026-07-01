@@ -1,0 +1,16 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { site } from "@/site.config";
+---
+
+<BaseLayout title="About">
+  <section class="shell page-title">
+    <p class="eyebrow">About</p>
+    <h1>About this blog</h1>
+  </section>
+  <section class="article-shell prose">
+    <p>{site.title} is Kiwi's technical notebook, shaped around an AstroPaper-inspired Mingalaba theme.</p>
+    <p>It collects study notes, engineering records, and occasional writing. The current priority is stable reading for Markdown, math, code, and images.</p>
+    <p>Posts live in <code>src/content/blog/</code>. Images live in <code>public/images/</code> and are referenced as <code>/images/example.png</code>.</p>
+  </section>
+</BaseLayout>

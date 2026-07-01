@@ -1,0 +1,60 @@
+---
+import "katex/dist/katex.min.css";
+import "../styles/global.css";
+import { site } from "@/site.config";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const siteTitle = site.title;
+const { title = siteTitle, description = site.description } = Astro.props;
+const pageTitle = title === siteTitle ? siteTitle : `${title} · ${siteTitle}`;
+---
+
+<!doctype html>
+<html lang={site.lang} data-theme={site.theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+    <script is:inline>
+      const savedTheme = localStorage.getItem("theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.colorMode = savedTheme ?? (prefersDark ? "dark" : "light");
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="Primary navigation">
+        <a class="brand" href="/">{site.title}</a>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/blog/">Blog</a>
+          <a href="/categories/">Categories</a>
+          <a href="/tags/">Tags</a>
+          <a href="/about/">About</a>
+          <button class="theme-toggle" type="button" aria-label="Toggle color mode" title="Toggle color mode">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+      </nav>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <script>
+      const button = document.querySelector<HTMLButtonElement>(".theme-toggle");
+      button?.addEventListener("click", () => {
+        const current = document.documentElement.dataset.colorMode === "dark" ? "dark" : "light";
+        const next = current === "dark" ? "light" : "dark";
+        document.documentElement.dataset.colorMode = next;
+        localStorage.setItem("theme", next);
+      });
+    </script>
+  </body>
+</html>

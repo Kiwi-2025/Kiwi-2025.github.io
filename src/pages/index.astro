@@ -1,0 +1,57 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { formatDate, getAllPosts, slugFromId } from "@/lib/blog";
+import { site } from "@/site.config";
+
+const posts = await getAllPosts();
+const featuredPost = posts[0];
+const recentPosts = posts.slice(1);
+---
+
+<BaseLayout>
+  <section class="intro shell">
+    <h1>{site.title}</h1>
+    <p>{site.intro}</p>
+    <nav class="social-links" aria-label="Site links">
+      <a href="/blog/">Blog</a>
+      <a href="/about/">About</a>
+      <a href="/categories/">Categories</a>
+      <a href="/tags/">Tags</a>
+    </nav>
+  </section>
+
+  {featuredPost && (
+    <section class="shell listing" aria-labelledby="featured-posts">
+      <div class="section-head">
+        <h2 id="featured-posts">Featured</h2>
+      </div>
+      <div class="post-list featured-list">
+        <article class="post-item">
+          <a href={`/blog/${slugFromId(featuredPost.id)}/`}>
+            <span>{formatDate(featuredPost.data.date)}</span>
+            <strong>{featuredPost.data.title}</strong>
+            <p>{featuredPost.data.description ?? "Latest technical note."}</p>
+          </a>
+        </article>
+      </div>
+    </section>
+  )}
+
+  <section class="shell listing" aria-labelledby="recent-posts">
+    <div class="section-head">
+      <h2 id="recent-posts">Recent Notes</h2>
+      <p>{recentPosts.length} notes</p>
+    </div>
+    <div class="post-list">
+      {recentPosts.map((post) => (
+        <article class="post-item">
+          <a href={`/blog/${slugFromId(post.id)}/`}>
+            <span>{formatDate(post.data.date)}</span>
+            <strong>{post.data.title}</strong>
+            <p>{post.data.description ?? "Markdown technical note."}</p>
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
