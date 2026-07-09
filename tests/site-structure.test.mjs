@@ -20,6 +20,8 @@ const requiredFiles = [
   "src/pages/404.astro",
   "src/site.config.ts",
   ".github/workflows/deploy.yml",
+  "public/admin/index.html",
+  "public/admin/config.yml",
   "README.md"
 ];
 
@@ -172,4 +174,32 @@ test("home brand typography and rhythm match compact AstroPaper notes", () => {
   assert.match(styles, /\.listing,\s*\n\.page-title\s*\{[\s\S]*padding-block:\s*1\.1rem/);
   assert.match(styles, /\.post-item a\s*\{[\s\S]*min-height:\s*56px/);
   assert.match(styles, /\.article-shell\s*\{[\s\S]*padding:\s*clamp\(1\.25rem,\s*3vw,\s*2\.25rem\) 1rem/);
+});
+
+test("Sveltia CMS admin supports mobile GitHub publishing", () => {
+  const admin = readFileSync(join(root, "public/admin/index.html"), "utf8");
+  const cmsConfig = readFileSync(join(root, "public/admin/config.yml"), "utf8");
+  const readme = readFileSync(join(root, "README.md"), "utf8");
+
+  assert.match(admin, /<meta name="robots" content="noindex, nofollow" \/>/);
+  assert.match(admin, /https:\/\/unpkg\.com\/@sveltia\/cms\/dist\/sveltia-cms\.js/);
+  assert.match(admin, /<title>Kiwi's Blog CMS<\/title>/);
+
+  assert.match(cmsConfig, /backend:\s*\n\s+name:\s+github/);
+  assert.match(cmsConfig, /repo:\s+Kiwi-2025\/Kiwi-2025\.github\.io/);
+  assert.match(cmsConfig, /branch:\s+main/);
+  assert.match(cmsConfig, /media_folder:\s+public\/images/);
+  assert.match(cmsConfig, /public_folder:\s+\/images/);
+  assert.match(cmsConfig, /folder:\s+src\/content\/blog/);
+  assert.match(cmsConfig, /create:\s+true/);
+  assert.match(cmsConfig, /slug:\s+"\{\{slug\}\}"/);
+  for (const field of ["title", "date", "description", "categories", "tags", "draft", "body"]) {
+    assert.match(cmsConfig, new RegExp(`name:\\s+${field}`));
+  }
+
+  assert.match(readme, /## 手机写作后台/);
+  assert.match(readme, /\/admin\//);
+  assert.match(readme, /fine-grained personal access token/i);
+  assert.match(readme, /public\/images/);
+  assert.match(readme, /\/images\//);
 });
