@@ -1,16 +1,14 @@
 ---
-title: Fourier Optics 1
-date: 2024-07-01 23:46:05
+title:  Fourier Optics Note-1
+date: 2026-07-01 23:46:05
 categories:
 - Notes
 tags:
 - Optics
+featured: true
+description: Based on Goodman’s book "Introduction to Fourier Optics"
 ---
-# Fourier Optics 1
-
-这部分主要是关于2D傅里叶变换的数学补充，不涉及光学内容
-
-## 2D Fourier Transform
+# 2D Fourier Transform
 
 类似于 1D 的傅里叶变换，对于一个定义在 $\mathbb{R}^2$ 上的函数 $g(x, y)$，其 2D 傅里叶变换的定义为：
 
@@ -27,7 +25,7 @@ $$
 
 正变换和逆变换共享一个类似的积分核 $\exp \left[ \pm j2\pi(f_x x + f_y y) \right]$，后面轴对称情况的 Fourier-Bessel 积分也有类似的积分核 $\exp \left[ \pm j2\pi f r \cos(\theta - \phi) \right]$
 
-## 广义函数
+# 广义函数
 
 做傅里叶变换就绕不开 Dirac delta 函数 $\delta(x)$，它是一个广义函数（generalized function），也叫分布（distribution）。广义函数的概念是由 Schwartz 在 20 世纪 40 年代提出的，它是对传统函数概念的推广。
 
@@ -42,7 +40,7 @@ $$
 
 广义函数的定义是通过它们的作用来定义的，而不是通过它们的值来定义的。也就是说，广义函数是通过它们与测试函数的积分来定义的。
 
-### Dirac $\delta$ 函数的不同形式
+## Dirac $\delta$ 函数的不同形式
 
 除了上面提到的极限形式，Dirac $\delta$ 函数还有其他几种常见的形式：
 
@@ -77,7 +75,7 @@ $$
 \delta(x, y) = \lim_{N \to \infty} N^2 \exp \left[ -\pi N^2 (x^2 + y^2) \right]
 $$
 
-### 利用测试函数定义Dirac函数
+## 利用测试函数定义Dirac函数
 
 Dirac 函数 $\delta(x)$ 的定义是通过它与测试函数 $\phi(x)$ 的积分来定义的：
 $$
@@ -89,7 +87,7 @@ $$
 \langle \delta, \phi \rangle = \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} \delta(x, y) \phi(x, y) \text{d}x \text{d}y = \phi(0, 0)
 $$
 
-## Fourier-Bessel 变换
+# Fourier-Bessel 变换
 对于可分离变量的函数其傅里叶变换可以写成两个一维傅里叶变换的乘积，这其中的一类更特殊的函数是径向对称函数（radially symmetric function），即 $g(x, y) = g(r)$，其中 $r = \sqrt{x^2 + y^2}$。对于这样的函数，其傅里叶变换也具有径向对称性，可以写成一个一维积分，这就是 Fourier-Bessel 变换。
 
 如果 $g(r, \theta) = g_R(r)$，则其傅里叶变换为：
@@ -102,14 +100,14 @@ $$
 F(g) = G_o(\rho, \phi) = \int_0^{\infty} g_R(r) J_0(2\pi \rho r) r \text{d}r
 $$
 
-## Convolution Theorem
+# Convolution Theorem
 卷积定理可以认为是傅里叶变换中最重要的定理之一，它说明了卷积运算和傅里叶变换之间的关系。对于两个函数 $g(x, y)$ 和 $h(x, y)$，它们的二维卷积定义为：
 
 $$
 (g * h)(x, y) = \iint_{-\infty}^{\infty} g(u, v) h(x - u, y - v) \text{d}u \text{d}v
 $$
 
-### 卷积定理
+## 卷积定理
 两个信号在空间域中的卷积对应于它们在频率域中的乘积。具体来说，如果 $G(f_x, f_y)$ 和 $H(f_x, f_y)$ 分别是 $g(x, y)$ 和 $h(x, y)$ 的傅里叶变换，那么有：
 $$
 F(g * h) = F(g) \cdot F(h)
@@ -120,7 +118,7 @@ $$
 F^{-1}(G * H) = F^{-1}(G) \cdot F^{-1}(H)
 $$
 
-### 卷积定理的证明
+## 卷积定理的证明
 
 证明上面这个卷积定理，从定义出发暴力计算：
 $$

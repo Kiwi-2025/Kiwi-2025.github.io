@@ -1,10 +1,11 @@
 ---
-title: 机器人学笔记
+title:  Robotics Notes
 date: 2025-05-11 10:00:00
 categories:
 - 机器人学
 tags:
 - 杂碎知识
+description: John J.Craig's "Introduction to Robotics" Notes
 ---
 
 # 机器人学笔记

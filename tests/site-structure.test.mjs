@@ -72,12 +72,50 @@ test("homepage follows the AstroPaper demo layout instead of a large hero", () =
   const home = readFileSync(join(root, "src/pages/index.astro"), "utf8");
   assert.match(home, /Featured/);
   assert.match(home, /Recent Notes/);
+  assert.match(home, /featuredPost\s*=\s*posts\.find\(\(post\)\s*=>\s*post\.data\.featured\)/);
+  assert.match(home, /recentPosts\s*=\s*posts/);
+  assert.doesNotMatch(home, /featuredPost\s*=\s*posts\[0\]/);
+  assert.doesNotMatch(home, /recentPosts\s*=\s*posts\.slice\(1\)/);
+  assert.ok(
+    home.indexOf('id="recent-posts"') < home.indexOf('id="featured-posts"'),
+    "Recent Notes should appear before Featured on the homepage"
+  );
   assert.doesNotMatch(home, /astro-paper-hero/);
 
   const styles = readFileSync(join(root, "src/styles/global.css"), "utf8");
   assert.match(styles, /max-width:\s*48rem/);
   assert.match(styles, /--astro-paper-accent:\s*#2563eb/);
   assert.doesNotMatch(styles, /font-size:\s*clamp\(2\.75rem,\s*10vw,\s*6\.5rem\)/);
+});
+
+test("homepage surfaces milestone updates from the Milestone post", () => {
+  const home = readFileSync(join(root, "src/pages/index.astro"), "utf8");
+  const milestone = readFileSync(join(root, "src/content/blog/Milestone.md"), "utf8");
+
+  assert.match(home, /milestonePost/);
+  assert.match(home, /milestoneItems/);
+  assert.match(home, /id="milestone-updates"/);
+  assert.match(home, /Milestone/);
+  assert.match(home, /\/blog\/milestone\//);
+  assert.match(home, /class="milestone-timeline"/);
+  assert.match(home, /class="milestone-date"/);
+  assert.match(home, /class="milestone-marker"/);
+  assert.match(home, /class="milestone-copy"/);
+  assert.match(home, /formatMilestoneDate/);
+  assert.match(home, /\.reverse\(\)/);
+  assert.match(milestone, /# Milestone/);
+  assert.match(milestone, /^- 2025年1月30日/m);
+});
+
+test("homepage milestone timeline avoids vertical line and item dividers", () => {
+  const styles = readFileSync(join(root, "src/styles/global.css"), "utf8");
+  const milestoneCopyBlock = styles.match(/\.milestone-copy\s*\{(?<body>[^}]*)\}/)?.groups?.body ?? "";
+  const milestoneTimelineBlock = styles.match(/\.milestone-timeline\s*\{(?<body>[^}]*)\}/)?.groups?.body ?? "";
+
+  assert.match(milestoneTimelineBlock, /--milestone-date-width:\s*6\.6rem/);
+  assert.doesNotMatch(milestoneCopyBlock, /border-bottom:/);
+  assert.doesNotMatch(styles, /\.milestone-timeline::before\s*\{/);
+  assert.doesNotMatch(styles, /\.milestone-timeline li::before\s*\{/);
 });
 
 test("static UI chrome is English while document language remains Chinese", () => {
@@ -109,6 +147,21 @@ test("static UI chrome is English while document language remains Chinese", () =
   assert.match(notFound, /<BaseLayout title="Not found"/);
   assert.match(notFound, /<h1>Page not found<\/h1>/);
   assert.match(notFound, /Back home/);
+});
+
+test("post listings omit placeholder summaries when description is missing", () => {
+  for (const file of [
+    "src/pages/index.astro",
+    "src/pages/blog/index.astro",
+    "src/pages/categories/[category].astro",
+    "src/pages/tags/[tag].astro"
+  ]) {
+    const source = readFileSync(join(root, file), "utf8");
+    assert.doesNotMatch(source, /Markdown technical note\./);
+    assert.doesNotMatch(source, /Latest technical note\./);
+    assert.doesNotMatch(source, /description\s*\?\?/);
+    assert.match(source, /data\.description &&/);
+  }
 });
 
 test("blog index lists all posts without category or tag filters", () => {
@@ -193,7 +246,7 @@ test("Sveltia CMS admin supports mobile GitHub publishing", () => {
   assert.match(cmsConfig, /folder:\s+src\/content\/blog/);
   assert.match(cmsConfig, /create:\s+true/);
   assert.match(cmsConfig, /slug:\s+"\{\{slug\}\}"/);
-  for (const field of ["title", "date", "description", "categories", "tags", "draft", "body"]) {
+  for (const field of ["title", "date", "description", "categories", "tags", "featured", "draft", "body"]) {
     assert.match(cmsConfig, new RegExp(`name:\\s+${field}`));
   }
 
@@ -202,4 +255,23 @@ test("Sveltia CMS admin supports mobile GitHub publishing", () => {
   assert.match(readme, /fine-grained personal access token/i);
   assert.match(readme, /public\/images/);
   assert.match(readme, /\/images\//);
+});
+
+test("blog content schema supports manual featured posts", () => {
+  const contentConfig = readFileSync(join(root, "src/content.config.ts"), "utf8");
+  assert.match(contentConfig, /featured:\s*z\.boolean\(\)\.default\(false\)/);
+});
+
+test("Sveltia CMS offers existing categories and tags as multi-select options", () => {
+  const cmsConfig = readFileSync(join(root, "public/admin/config.yml"), "utf8");
+
+  assert.match(cmsConfig, /name:\s+categories[\s\S]*?widget:\s+select[\s\S]*?multiple:\s+true/);
+  for (const category of ["Notes", "生活", "机器人学", "光学", "软件开发", "工程笔记", "数学", "读书笔记", "随笔"]) {
+    assert.match(cmsConfig, new RegExp(`- ${category}`));
+  }
+
+  assert.match(cmsConfig, /name:\s+tags[\s\S]*?widget:\s+select[\s\S]*?multiple:\s+true/);
+  for (const tag of ["Optics", "history", "杂碎知识", "Robotics", "Astro", "Markdown", "GitHub Pages", "编程", "公式", "实验", "项目记录", "读书"]) {
+    assert.match(cmsConfig, new RegExp(`- ${tag}`));
+  }
 });

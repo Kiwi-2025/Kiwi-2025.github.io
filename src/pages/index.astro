@@ -4,8 +4,37 @@ import { formatDate, getAllPosts, slugFromId } from "@/lib/blog";
 import { site } from "@/site.config";
 
 const posts = await getAllPosts();
-const featuredPost = posts[0];
-const recentPosts = posts.slice(1);
+const featuredPost = posts.find((post) => post.data.featured);
+const recentPosts = posts;
+const milestonePost = posts.find((post) => slugFromId(post.id).toLowerCase() === "milestone");
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+const renderMilestoneText = (value: string) =>
+  escapeHtml(value)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/`(.+?)`/g, "<code>$1</code>");
+const formatMilestoneDate = (value: string) => {
+  const match = value.match(/^(\d{4})年(\d{1,2})月(\d{1,2})日$/);
+  if (!match) return value;
+  const [, year, month, day] = match;
+  return `${year}/${month.padStart(2, "0")}/${day.padStart(2, "0")}`;
+};
+const milestoneItems = (milestonePost?.body ?? "")
+  .split("\n")
+  .map((line) => line.match(/^- (.+)$/)?.[1])
+  .filter((item): item is string => Boolean(item))
+  .map((item) => {
+    const match = item.match(/^(.+?日)，(.+)$/);
+    return {
+      date: formatMilestoneDate(match?.[1] ?? ""),
+      text: renderMilestoneText(match?.[2] ?? item)
+    };
+  })
+  .reverse();
 ---
 
 <BaseLayout>
@@ -20,23 +49,6 @@ const recentPosts = posts.slice(1);
     </nav>
   </section>
 
-  {featuredPost && (
-    <section class="shell listing" aria-labelledby="featured-posts">
-      <div class="section-head">
-        <h2 id="featured-posts">Featured</h2>
-      </div>
-      <div class="post-list featured-list">
-        <article class="post-item">
-          <a href={`/blog/${slugFromId(featuredPost.id)}/`}>
-            <span>{formatDate(featuredPost.data.date)}</span>
-            <strong>{featuredPost.data.title}</strong>
-            <p>{featuredPost.data.description ?? "Latest technical note."}</p>
-          </a>
-        </article>
-      </div>
-    </section>
-  )}
-
   <section class="shell listing" aria-labelledby="recent-posts">
     <div class="section-head">
       <h2 id="recent-posts">Recent Notes</h2>
@@ -48,10 +60,45 @@ const recentPosts = posts.slice(1);
           <a href={`/blog/${slugFromId(post.id)}/`}>
             <span>{formatDate(post.data.date)}</span>
             <strong>{post.data.title}</strong>
-            <p>{post.data.description ?? "Markdown technical note."}</p>
+            {post.data.description && <p>{post.data.description}</p>}
           </a>
         </article>
       ))}
     </div>
   </section>
+
+  {featuredPost && (
+    <section class="shell listing" aria-labelledby="featured-posts">
+      <div class="section-head">
+        <h2 id="featured-posts">Featured</h2>
+      </div>
+      <div class="post-list featured-list">
+        <article class="post-item">
+          <a href={`/blog/${slugFromId(featuredPost.id)}/`}>
+            <span>{formatDate(featuredPost.data.date)}</span>
+            <strong>{featuredPost.data.title}</strong>
+            {featuredPost.data.description && <p>{featuredPost.data.description}</p>}
+          </a>
+        </article>
+      </div>
+    </section>
+  )}
+
+  {milestonePost && milestoneItems.length > 0 && (
+    <section class="shell listing milestone-listing" aria-labelledby="milestone-updates">
+      <div class="section-head">
+        <h2 id="milestone-updates">Milestone</h2>
+        <a class="text-link" href="/blog/milestone/">View note</a>
+      </div>
+      <ol class="milestone-timeline">
+        {milestoneItems.map((item) => (
+          <li>
+            <time class="milestone-date">{item.date}</time>
+            <span class="milestone-marker" aria-hidden="true"></span>
+            <p class="milestone-copy" set:html={item.text} />
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
 </BaseLayout>

@@ -22,7 +22,7 @@ const posts = await getAllPosts();
           <a href={`/blog/${slugFromId(post.id)}/`}>
             <span>{formatDate(post.data.date)}</span>
             <strong>{post.data.title}</strong>
-            <p>{post.data.description ?? "Markdown technical note."}</p>
+            {post.data.description && <p>{post.data.description}</p>}
           </a>
         </article>
       ))}

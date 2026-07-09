@@ -316,6 +316,64 @@ kbd {
   grid-column: 1;
 }
 
+.milestone-timeline {
+  --milestone-date-width: 6.6rem;
+  --milestone-gap: 0.55rem;
+  --milestone-marker-column: 0.85rem;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0 0.85rem;
+}
+
+.milestone-timeline li {
+  display: grid;
+  gap: var(--milestone-gap);
+  grid-template-columns: var(--milestone-date-width) var(--milestone-marker-column) 1fr;
+  min-height: 4.25rem;
+  position: relative;
+}
+
+.milestone-date {
+  color: var(--astro-paper-muted);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  padding-top: 0.92rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.milestone-marker {
+  align-self: start;
+  background: var(--astro-paper-bg);
+  border: 2px solid var(--astro-paper-accent);
+  border-radius: 999px;
+  box-shadow: 0 0 0 4px var(--astro-paper-accent-soft);
+  height: 0.68rem;
+  margin-top: 1.08rem;
+  width: 0.68rem;
+  z-index: 1;
+}
+
+.milestone-copy {
+  color: var(--astro-paper-text);
+  line-height: 1.66;
+  margin: 0;
+  padding: 0.72rem 0 1rem;
+}
+
+.milestone-copy code {
+  background: var(--astro-paper-code-inline);
+  border: 1px solid color-mix(in srgb, var(--astro-paper-border), transparent 35%);
+  border-radius: 4px;
+  font-size: 0.9em;
+  padding: 0.1rem 0.28rem;
+}
+
+.milestone-copy strong {
+  color: var(--astro-paper-text);
+}
+
 .term-grid {
   display: grid;
   gap: 0;
@@ -496,6 +554,22 @@ kbd {
 
   .post-item p {
     grid-column: 1;
+  }
+
+  .milestone-timeline {
+    --milestone-date-width: 5.2rem;
+    --milestone-gap: 0.48rem;
+    --milestone-marker-column: 0.75rem;
+  }
+
+  .milestone-date {
+    font-size: 0.76rem;
+    overflow-wrap: anywhere;
+  }
+
+  .milestone-marker {
+    height: 0.62rem;
+    width: 0.62rem;
   }
 }
 

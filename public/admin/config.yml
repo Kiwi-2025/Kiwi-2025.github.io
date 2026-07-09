@@ -29,11 +29,41 @@ collections:
         required: false
       - name: categories
         label: Categories
-        widget: list
+        widget: select
+        multiple: true
+        options:
+          - Notes
+          - 生活
+          - 机器人学
+          - 光学
+          - 软件开发
+          - 工程笔记
+          - 数学
+          - 读书笔记
+          - 随笔
         required: false
       - name: tags
         label: Tags
-        widget: list
+        widget: select
+        multiple: true
+        options:
+          - Optics
+          - history
+          - 杂碎知识
+          - Robotics
+          - Astro
+          - Markdown
+          - GitHub Pages
+          - 编程
+          - 公式
+          - 实验
+          - 项目记录
+          - 读书
+        required: false
+      - name: featured
+        label: Featured
+        widget: boolean
+        default: false
         required: false
       - name: draft
         label: Draft
