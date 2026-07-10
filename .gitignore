@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .astro/
+.worktrees/
 .preview*.log
 .env
 .env.*
