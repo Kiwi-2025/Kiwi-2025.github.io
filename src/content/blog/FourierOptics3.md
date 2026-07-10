@@ -5,7 +5,7 @@ categories:
 - Notes
 tags:
 - Optics
-featured: false
+featured: true
 description: Fresnel and Fraunhofer diffraction—physical pictures, validity conditions, and FFT sampling
 ---
 

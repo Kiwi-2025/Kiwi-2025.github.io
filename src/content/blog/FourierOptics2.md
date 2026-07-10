@@ -5,7 +5,7 @@ categories:
 - Notes
 tags:
 - Optics
-featured: false
+featured: true
 description: Scalar diffraction theory—physical pictures, approximations, and engineering choices
 ---
 

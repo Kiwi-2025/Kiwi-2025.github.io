@@ -72,9 +72,14 @@ test("homepage follows the AstroPaper demo layout instead of a large hero", () =
   const home = readFileSync(join(root, "src/pages/index.astro"), "utf8");
   assert.match(home, /Featured/);
   assert.match(home, /Recent Notes/);
-  assert.match(home, /featuredPost\s*=\s*posts\.find\(\(post\)\s*=>\s*post\.data\.featured\)/);
-  assert.match(home, /recentPosts\s*=\s*posts/);
-  assert.doesNotMatch(home, /featuredPost\s*=\s*posts\[0\]/);
+  assert.match(home, /recentPosts\s*=\s*posts\.slice\(0,\s*5\)/);
+  assert.match(
+    home,
+    /featuredPosts\s*=\s*posts\s*\.filter\(\(post\)\s*=>\s*post\.data\.featured\)\s*\.slice\(0,\s*3\)/
+  );
+  assert.match(home, /featuredPosts\.map\(\(post\)\s*=>/);
+  assert.match(home, /featuredPosts\.length\s*>\s*0/);
+  assert.doesNotMatch(home, /featuredPost\s*=\s*posts\.find/);
   assert.doesNotMatch(home, /recentPosts\s*=\s*posts\.slice\(1\)/);
   assert.ok(
     home.indexOf('id="recent-posts"') < home.indexOf('id="featured-posts"'),

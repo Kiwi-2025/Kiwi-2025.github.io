@@ -4,8 +4,10 @@ import { formatDate, getAllPosts, slugFromId } from "@/lib/blog";
 import { site } from "@/site.config";
 
 const posts = await getAllPosts();
-const featuredPost = posts.find((post) => post.data.featured);
-const recentPosts = posts;
+const recentPosts = posts.slice(0, 5);
+const featuredPosts = posts
+  .filter((post) => post.data.featured)
+  .slice(0, 3);
 const milestonePost = posts.find((post) => slugFromId(post.id).toLowerCase() === "milestone");
 const escapeHtml = (value: string) =>
   value
@@ -67,19 +69,21 @@ const milestoneItems = (milestonePost?.body ?? "")
     </div>
   </section>
 
-  {featuredPost && (
+  {featuredPosts.length > 0 && (
     <section class="shell listing" aria-labelledby="featured-posts">
       <div class="section-head">
         <h2 id="featured-posts">Featured</h2>
       </div>
       <div class="post-list featured-list">
-        <article class="post-item">
-          <a href={`/blog/${slugFromId(featuredPost.id)}/`}>
-            <span>{formatDate(featuredPost.data.date)}</span>
-            <strong>{featuredPost.data.title}</strong>
-            {featuredPost.data.description && <p>{featuredPost.data.description}</p>}
-          </a>
-        </article>
+        {featuredPosts.map((post) => (
+          <article class="post-item">
+            <a href={`/blog/${slugFromId(post.id)}/`}>
+              <span>{formatDate(post.data.date)}</span>
+              <strong>{post.data.title}</strong>
+              {post.data.description && <p>{post.data.description}</p>}
+            </a>
+          </article>
+        ))}
       </div>
     </section>
   )}
