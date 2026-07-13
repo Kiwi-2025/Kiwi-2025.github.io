@@ -8,26 +8,130 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+const tocHeadings = headings.filter(({ depth }) => depth >= 1 && depth <= 3);
 const description = post.data.description ?? `${post.data.title} - ${formatDate(post.data.date)}`;
 ---
 
 <BaseLayout title={post.data.title} description={description}>
-  <article class="article-shell">
-    <header class="article-header">
-      <p class="eyebrow">{formatDate(post.data.date)}</p>
-      <h1>{post.data.title}</h1>
-      <div class="term-row" aria-label="Categories and tags">
-        {post.data.categories.map((category) => (
-          <a href={`/categories/${routePart(category)}/`}>{category}</a>
-        ))}
-        {post.data.tags.map((tag) => (
-          <a href={`/tags/${routePart(tag)}/`}>#{tag}</a>
-        ))}
+  <div
+    class="reading-progress"
+    role="progressbar"
+    aria-label="Reading progress"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="0"
+  >
+    <span></span>
+  </div>
+
+  <div class="article-layout">
+    {tocHeadings.length > 0 && (
+      <aside class="article-toc article-toc--desktop" aria-label="On this page">
+        <p>On this page</p>
+        <ul>
+          {tocHeadings.map((heading) => (
+            <li>
+              <a class={`toc-link toc-link--depth-${heading.depth}`} href={`#${heading.slug}`}>
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </aside>
+    )}
+
+    <article class="article-shell">
+      <header class="article-header">
+        <p class="eyebrow">{formatDate(post.data.date)}</p>
+        <h1>{post.data.title}</h1>
+        <div class="term-row" aria-label="Categories and tags">
+          {post.data.categories.map((category) => (
+            <a href={`/categories/${routePart(category)}/`}>{category}</a>
+          ))}
+          {post.data.tags.map((tag) => (
+            <a href={`/tags/${routePart(tag)}/`}>#{tag}</a>
+          ))}
+        </div>
+      </header>
+
+      {tocHeadings.length > 0 && (
+        <details class="article-toc article-toc--mobile">
+          <summary>On this page</summary>
+          <nav aria-label="On this page">
+            <ul>
+              {tocHeadings.map((heading) => (
+                <li>
+                  <a class={`toc-link toc-link--depth-${heading.depth}`} href={`#${heading.slug}`}>
+                    {heading.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </details>
+      )}
+
+      <div class="prose">
+        <Content />
       </div>
-    </header>
-    <div class="prose">
-      <Content />
-    </div>
-  </article>
+    </article>
+  </div>
+
+  <script>
+    const progress = document.querySelector<HTMLElement>(".reading-progress");
+    const progressFill = progress?.querySelector<HTMLElement>("span");
+    const article = document.querySelector<HTMLElement>(".prose");
+    const articleHeadings = Array.from(
+      article?.querySelectorAll<HTMLElement>("h1[id], h2[id], h3[id]") ?? []
+    );
+    const tocLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(".toc-link"));
+    let updateRequested = false;
+
+    const updateReadingState = () => {
+      updateRequested = false;
+
+      if (!article || !progress || !progressFill) return;
+
+      const articleTop = article.getBoundingClientRect().top + window.scrollY;
+      const articleBottom = articleTop + article.offsetHeight;
+      const readingEnd = Math.max(articleTop, articleBottom - window.innerHeight);
+      const readingDistance = Math.max(readingEnd - articleTop, 1);
+      const percentage = Math.min(100, Math.max(0, ((window.scrollY - articleTop) / readingDistance) * 100));
+
+      progressFill.style.transform = `scaleX(${percentage / 100})`;
+      progress.setAttribute("aria-valuenow", String(Math.round(percentage)));
+
+      if (articleHeadings.length === 0) return;
+
+      const activationLine = window.scrollY + Math.min(window.innerHeight * 0.3, 160);
+      let activeHeading = articleHeadings[0];
+
+      for (const heading of articleHeadings) {
+        const headingTop = heading.getBoundingClientRect().top + window.scrollY;
+        if (headingTop > activationLine) break;
+        activeHeading = heading;
+      }
+
+      for (const link of tocLinks) {
+        const isActive = link.getAttribute("href") === `#${activeHeading.id}`;
+        link.classList.toggle("is-active", isActive);
+        if (isActive) {
+          link.setAttribute("aria-current", "location");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      }
+    };
+
+    const requestReadingStateUpdate = () => {
+      if (updateRequested) return;
+      updateRequested = true;
+      window.requestAnimationFrame(updateReadingState);
+    };
+
+    window.addEventListener("scroll", requestReadingStateUpdate, { passive: true });
+    window.addEventListener("resize", requestReadingStateUpdate);
+    requestReadingStateUpdate();
+  </script>
 </BaseLayout>

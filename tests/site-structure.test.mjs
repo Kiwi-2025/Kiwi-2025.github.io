@@ -219,6 +219,28 @@ test("technical note styling protects long-form content on small screens", () =>
   assert.match(styles, /\[data-theme="mingalaba"\]\[data-color-mode="dark"\][\s\S]*--astro-paper-code:\s*#020617/);
 });
 
+test("article pages provide a responsive table of contents and reading progress", () => {
+  const layout = readFileSync(join(root, "src/layouts/BlogPostLayout.astro"), "utf8");
+  const styles = readFileSync(join(root, "src/styles/global.css"), "utf8");
+
+  assert.match(layout, /const \{ Content, headings \} = await render\(post\)/);
+  assert.match(layout, /depth >= 1 && depth <= 3/);
+  assert.match(layout, /article-toc--desktop/);
+  assert.match(layout, /<details class="article-toc article-toc--mobile">/);
+  assert.match(layout, /On this page/);
+  assert.match(layout, /role="progressbar"/);
+  assert.match(layout, /aria-valuenow="0"/);
+  assert.match(layout, /requestAnimationFrame\(updateReadingState\)/);
+  assert.match(layout, /aria-current/);
+
+  assert.match(styles, /\.reading-progress\s*\{[\s\S]*height:\s*3px/);
+  assert.match(styles, /\.article-toc--desktop\s*\{[\s\S]*display:\s*none/);
+  assert.match(styles, /@media \(min-width:\s*1100px\)[\s\S]*position:\s*sticky/);
+  assert.match(styles, /\.article-toc--mobile\s*\{[\s\S]*border-top:/);
+  assert.match(styles, /\.toc-link\.is-active\s*\{[\s\S]*--astro-paper-accent/);
+  assert.match(styles, /scroll-margin-top:\s*6rem/);
+});
+
 test("home brand typography and rhythm match compact AstroPaper notes", () => {
   const layout = readFileSync(join(root, "src/layouts/BaseLayout.astro"), "utf8");
   const styles = readFileSync(join(root, "src/styles/global.css"), "utf8");
