@@ -42,6 +42,13 @@ test("math rendering and GitHub Pages deployment are configured", () => {
 
   const workflow = readFileSync(join(root, ".github/workflows/deploy.yml"), "utf8");
   assert.match(workflow, /actions\/deploy-pages/);
+  assert.match(workflow, /actions\/upload-pages-artifact/);
+  assert.match(workflow, /path:\s*dist/);
+  assert.doesNotMatch(workflow, /jekyll-build-pages/);
+});
+
+test("published site disables Jekyll processing", () => {
+  assert.equal(existsSync(join(root, "public/.nojekyll")), true, "public/.nojekyll should exist");
 });
 
 test("migrated Markdown keeps frontmatter categories and tags", () => {
