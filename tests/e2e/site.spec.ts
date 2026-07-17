@@ -49,7 +49,11 @@ test("search filters notes and persists the normalized query", async ({ page }) 
   await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("optics");
 
   await input.fill("no-such-note");
-  await expect(page.locator("[data-search-item]:visible")).toHaveCount(0);
+
+  await expect
+    .poll(async () => await page.locator("[data-search-item]:visible").count())
+    .toBe(0);
+
   await expect(page.locator(".search-empty")).toBeVisible();
 });
 
