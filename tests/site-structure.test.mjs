@@ -284,6 +284,15 @@ test("Sveltia CMS admin supports mobile GitHub publishing", () => {
   assert.match(readme, /\/images\//);
 });
 
+test("routeLabel decodes valid percent-encoding and falls back for invalid input", () => {
+  const blog = readFileSync(join(root, "src/lib/blog.ts"), "utf8");
+
+  assert.match(blog, /export function routeLabel\(value:\s*string \| undefined\)/);
+  assert.match(blog, /const label = value \?\? ""/);
+  assert.match(blog, /try\s*\{\s*return decodeURIComponent\(label\)\s*;\s*\}/);
+  assert.match(blog, /catch\s*\{\s*return label\s*;\s*\}/);
+});
+
 test("blog content schema supports manual featured posts", () => {
   const contentConfig = readFileSync(join(root, "src/content.config.ts"), "utf8");
   assert.match(contentConfig, /featured:\s*z\.boolean\(\)\.default\(false\)/);

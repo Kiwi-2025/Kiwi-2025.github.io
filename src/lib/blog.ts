@@ -11,7 +11,12 @@ export function routePart(value: string) {
 }
 
 export function routeLabel(value: string | undefined) {
-  return decodeURIComponent(value ?? "");
+  const label = value ?? "";
+  try {
+    return decodeURIComponent(label);
+  } catch {
+    return label;
+  }
 }
 
 export function formatDate(date: Date) {
