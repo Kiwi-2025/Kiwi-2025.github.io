@@ -1,0 +1,32 @@
+---
+import { formatDate, slugFromId, type BlogPost } from "@/lib/blog";
+
+interface Props {
+  posts: BlogPost[];
+  class?: string;
+  searchable?: boolean;
+}
+
+const { posts, class: className = "", searchable = false } = Astro.props;
+---
+
+<div class:list={["post-list", className]} data-post-list={searchable || undefined}>
+  {posts.map((post) => (
+    <article
+      class="post-item"
+      data-search-item={searchable || undefined}
+      data-search-text={searchable
+        ? [post.data.title, post.data.description, ...post.data.categories, ...post.data.tags]
+            .filter(Boolean)
+            .join(" ")
+            .toLocaleLowerCase("zh-CN")
+        : undefined}
+    >
+      <a href={`/blog/${slugFromId(post.id)}/`}>
+        <span>{formatDate(post.data.date)}</span>
+        <strong>{post.data.title}</strong>
+        {post.data.description && <p>{post.data.description}</p>}
+      </a>
+    </article>
+  ))}
+</div>

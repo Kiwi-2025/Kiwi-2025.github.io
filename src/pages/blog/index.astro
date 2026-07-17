@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { formatDate, getAllPosts, slugFromId } from "@/lib/blog";
+import PostList from "@/components/PostList.astro";
+import { getAllPosts } from "@/lib/blog";
 
 const posts = await getAllPosts();
 ---
@@ -16,16 +17,6 @@ const posts = await getAllPosts();
       <h2 id="all-posts">All Posts</h2>
       <p>{posts.length} notes</p>
     </div>
-    <div class="post-list">
-      {posts.map((post) => (
-        <article class="post-item">
-          <a href={`/blog/${slugFromId(post.id)}/`}>
-            <span>{formatDate(post.data.date)}</span>
-            <strong>{post.data.title}</strong>
-            {post.data.description && <p>{post.data.description}</p>}
-          </a>
-        </article>
-      ))}
-    </div>
+    <PostList posts={posts} />
   </section>
 </BaseLayout>

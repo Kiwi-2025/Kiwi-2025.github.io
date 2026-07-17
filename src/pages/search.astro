@@ -1,0 +1,54 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostList from "@/components/PostList.astro";
+import { getAllPosts } from "@/lib/blog";
+
+const posts = await getAllPosts();
+---
+
+<BaseLayout title="Search" description="搜索 Kiwi's Blog 的标题、摘要、分类和标签。" noindex>
+  <section class="shell page-title search-page">
+    <p class="eyebrow">Find a note</p>
+    <h1>Search</h1>
+    <label for="site-search">Search titles, summaries, categories, and tags</label>
+    <input id="site-search" type="search" placeholder="Try “Optics” or “机器人学”" autocomplete="off" />
+    <p class="search-status" aria-live="polite">
+      <span data-search-count>{posts.length}</span> notes
+    </p>
+  </section>
+  <section class="shell search-results" aria-label="Search results">
+    <PostList posts={posts} searchable />
+    <p class="search-empty" hidden>No matching notes. Try a shorter keyword.</p>
+  </section>
+
+  <script>
+    const input = document.querySelector<HTMLInputElement>("#site-search");
+    const items = Array.from(document.querySelectorAll<HTMLElement>("[data-search-item]"));
+    const count = document.querySelector<HTMLElement>("[data-search-count]");
+    const empty = document.querySelector<HTMLElement>(".search-empty");
+
+    const updateResults = () => {
+      const query = input?.value.trim().toLocaleLowerCase("zh-CN") ?? "";
+      let visible = 0;
+
+      for (const item of items) {
+        const matches = !query || item.dataset.searchText?.includes(query);
+        item.hidden = !matches;
+        if (matches) visible += 1;
+      }
+
+      if (count) count.textContent = String(visible);
+      if (empty) empty.hidden = visible !== 0;
+
+      const url = new URL(window.location.href);
+      query ? url.searchParams.set("q", query) : url.searchParams.delete("q");
+      window.history.replaceState({}, "", url);
+    };
+
+    if (input) {
+      input.value = new URL(window.location.href).searchParams.get("q") ?? "";
+      input.addEventListener("input", updateResults);
+      updateResults();
+    }
+  </script>
+</BaseLayout>

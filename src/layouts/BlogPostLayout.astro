@@ -1,19 +1,50 @@
 ---
+import "katex/dist/katex.min.css";
 import { render } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
-import { formatDate, routePart, type BlogPost } from "@/lib/blog";
+import MilestoneTimeline from "@/components/MilestoneTimeline.astro";
+import PostList from "@/components/PostList.astro";
+import { formatDate, readingMinutes, routePart, slugFromId, type BlogPost } from "@/lib/blog";
+import { site } from "@/site.config";
 
 interface Props {
   post: BlogPost;
+  newer?: BlogPost;
+  older?: BlogPost;
+  relatedPosts?: BlogPost[];
 }
 
-const { post } = Astro.props;
+const { post, newer, older, relatedPosts = [] } = Astro.props;
 const { Content, headings } = await render(post);
-const tocHeadings = headings.filter(({ depth }) => depth >= 1 && depth <= 3);
+const tocHeadings = headings.filter(({ depth }) => depth >= 2 && depth <= 3);
 const description = post.data.description ?? `${post.data.title} - ${formatDate(post.data.date)}`;
+const minutes = readingMinutes(post.body ?? "");
+const baseUrl = Astro.site ?? Astro.url.origin;
+const articleUrl = post.data.canonicalUrl ?? new URL(`/blog/${slugFromId(post.id)}/`, baseUrl).href;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description,
+  datePublished: post.data.date.toISOString(),
+  dateModified: (post.data.updatedDate ?? post.data.date).toISOString(),
+  author: {
+    "@type": "Person",
+    name: site.author,
+    url: site.github
+  },
+  mainEntityOfPage: articleUrl,
+  keywords: [...post.data.categories, ...post.data.tags].join(", ")
+};
 ---
 
-<BaseLayout title={post.data.title} description={description}>
+<BaseLayout
+  title={post.data.title}
+  description={description}
+  type="article"
+  canonicalUrl={articleUrl}
+  jsonLd={jsonLd}
+>
   <div
     class="reading-progress"
     role="progressbar"
@@ -43,8 +74,17 @@ const description = post.data.description ?? `${post.data.title} - ${formatDate(
 
     <article class="article-shell">
       <header class="article-header">
-        <p class="eyebrow">{formatDate(post.data.date)}</p>
+        <p class="eyebrow">
+          <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+          <span aria-hidden="true"> · </span>
+          <span>{minutes} min read</span>
+        </p>
         <h1>{post.data.title}</h1>
+        {post.data.updatedDate && (
+          <p class="article-updated">
+            Updated <time datetime={post.data.updatedDate.toISOString()}>{formatDate(post.data.updatedDate)}</time>
+          </p>
+        )}
         <div class="term-row" aria-label="Categories and tags">
           {post.data.categories.map((category) => (
             <a href={`/categories/${routePart(category)}/`}>{category}</a>
@@ -75,6 +115,39 @@ const description = post.data.description ?? `${post.data.title} - ${formatDate(
       <div class="prose">
         <Content />
       </div>
+
+      {post.data.milestones && post.data.milestones.length > 0 && (
+        <section class="milestone-listing article-milestones" aria-labelledby="article-milestones">
+          <h2 id="article-milestones">Milestones</h2>
+          <MilestoneTimeline items={post.data.milestones} />
+        </section>
+      )}
+
+      {(newer || older) && (
+        <nav class="post-navigation" aria-label="Adjacent posts">
+          {newer && (
+            <a class="post-navigation__link post-navigation__link--newer" rel="next" href={`/blog/${slugFromId(newer.id)}/`}>
+              <small>Newer</small>
+              <span>{newer.data.title}</span>
+            </a>
+          )}
+          {older && (
+            <a class="post-navigation__link post-navigation__link--older" rel="prev" href={`/blog/${slugFromId(older.id)}/`}>
+              <small>Older</small>
+              <span>{older.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )}
+
+      {relatedPosts.length > 0 && (
+        <section class="related-posts" aria-labelledby="related-posts">
+          <h2 id="related-posts">Related notes</h2>
+          <PostList posts={relatedPosts} />
+        </section>
+      )}
+
+      <a class="back-to-top" href="#main">Back to top</a>
     </article>
   </div>
 
@@ -83,7 +156,7 @@ const description = post.data.description ?? `${post.data.title} - ${formatDate(
     const progressFill = progress?.querySelector<HTMLElement>("span");
     const article = document.querySelector<HTMLElement>(".prose");
     const articleHeadings = Array.from(
-      article?.querySelectorAll<HTMLElement>("h1[id], h2[id], h3[id]") ?? []
+      article?.querySelectorAll<HTMLElement>("h2[id], h3[id]") ?? []
     );
     const tocLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(".toc-link"));
     let updateRequested = false;

@@ -1,16 +1,24 @@
 ---
 import BlogPostLayout from "@/layouts/BlogPostLayout.astro";
-import { getAllPosts, slugFromId } from "@/lib/blog";
+import { getAllPosts, getPostNavigation, getRelatedPosts, slugFromId } from "@/lib/blog";
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();
-  return posts.map((post) => ({
-    params: { slug: slugFromId(post.id) },
-    props: { post }
-  }));
+  return posts.map((post) => {
+    const navigation = getPostNavigation(posts, post);
+    return {
+      params: { slug: slugFromId(post.id) },
+      props: {
+        post,
+        newer: navigation.newer,
+        older: navigation.older,
+        relatedPosts: getRelatedPosts(posts, post)
+      }
+    };
+  });
 }
 
-const { post } = Astro.props;
+const { post, newer, older, relatedPosts } = Astro.props;
 ---
 
-<BlogPostLayout post={post} />
+<BlogPostLayout post={post} newer={newer} older={older} relatedPosts={relatedPosts} />

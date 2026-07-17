@@ -27,6 +27,12 @@ collections:
         label: Description
         widget: text
         required: false
+        hint: Published posts require a description.
+      - name: updatedDate
+        label: Updated Date
+        widget: datetime
+        format: "YYYY-MM-DD HH:mm:ss"
+        required: false
       - name: categories
         label: Categories
         widget: select
@@ -65,6 +71,31 @@ collections:
         widget: boolean
         default: false
         required: false
+      - name: series
+        label: Series
+        widget: string
+        required: false
+      - name: canonicalUrl
+        label: Canonical URL
+        widget: string
+        required: false
+        pattern:
+          - "^https://.+"
+          - Must be a complete HTTPS URL
+      - name: milestones
+        label: Milestones
+        widget: list
+        required: false
+        summary: "{{fields.date}} — {{fields.text}}"
+        fields:
+          - name: date
+            label: Date
+            widget: datetime
+            format: "YYYY-MM-DD"
+            time_format: false
+          - name: text
+            label: Text
+            widget: string
       - name: draft
         label: Draft
         widget: boolean
@@ -73,3 +104,4 @@ collections:
       - name: body
         label: Body
         widget: markdown
+        hint: Start body headings at H2; the page layout supplies the H1 title.

@@ -66,7 +66,8 @@ a:hover {
 }
 
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+.katex-display:focus-visible {
   border-radius: 6px;
   outline: 3px solid var(--focus-ring);
   outline-offset: 4px;
@@ -318,19 +319,18 @@ kbd {
 
 .milestone-timeline {
   --milestone-date-width: 6.6rem;
-  --milestone-gap: 0.55rem;
-  --milestone-marker-column: 0.85rem;
+  --milestone-gap: 1.15rem;
   list-style: none;
   margin: 0;
   padding: 0.35rem 0 0.85rem;
 }
 
 .milestone-timeline li {
+  align-items: start;
   display: grid;
   gap: var(--milestone-gap);
-  grid-template-columns: var(--milestone-date-width) var(--milestone-marker-column) 1fr;
-  min-height: 4.25rem;
-  position: relative;
+  grid-template-columns: var(--milestone-date-width) minmax(0, 1fr);
+  min-height: 3.8rem;
 }
 
 .milestone-date {
@@ -338,28 +338,16 @@ kbd {
   font-family: var(--font-mono);
   font-size: 0.82rem;
   line-height: 1.45;
-  padding-top: 0.92rem;
+  padding-top: 0.78rem;
   text-align: left;
   white-space: nowrap;
-}
-
-.milestone-marker {
-  align-self: start;
-  background: var(--astro-paper-bg);
-  border: 2px solid var(--astro-paper-accent);
-  border-radius: 999px;
-  box-shadow: 0 0 0 4px var(--astro-paper-accent-soft);
-  height: 0.68rem;
-  margin-top: 1.08rem;
-  width: 0.68rem;
-  z-index: 1;
 }
 
 .milestone-copy {
   color: var(--astro-paper-text);
   line-height: 1.66;
   margin: 0;
-  padding: 0.72rem 0 1rem;
+  padding: 0.68rem 0 1rem;
 }
 
 .milestone-copy code {
@@ -372,6 +360,99 @@ kbd {
 
 .milestone-copy strong {
   color: var(--astro-paper-text);
+}
+
+.article-milestones {
+  border-top: 1px solid var(--astro-paper-border);
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+}
+
+.article-milestones h2 {
+  margin-top: 0;
+}
+
+.post-navigation {
+  border-top: 1px solid var(--astro-paper-border);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 3rem;
+  padding-top: 2rem;
+}
+
+.post-navigation__link {
+  background: var(--astro-paper-surface);
+  border: 1px solid var(--astro-paper-border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  justify-content: center;
+  min-height: 104px;
+  padding: 1rem 1.15rem;
+  text-decoration: none;
+}
+
+.post-navigation__link:hover {
+  border-color: color-mix(in srgb, var(--astro-paper-accent), var(--astro-paper-border) 55%);
+  background: var(--astro-paper-accent-soft);
+}
+
+.post-navigation__link small {
+  color: var(--astro-paper-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.post-navigation__link span {
+  color: var(--astro-paper-text);
+  font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.post-navigation__link--older {
+  grid-column: 2;
+  text-align: right;
+}
+
+#site-search {
+  appearance: none;
+  background: var(--astro-paper-surface);
+  border: 1px solid var(--astro-paper-border);
+  border-radius: 10px;
+  caret-color: var(--astro-paper-accent);
+  color: var(--astro-paper-text);
+  color-scheme: light;
+  font: inherit;
+  margin-top: 0.45rem;
+  min-height: 48px;
+  padding: 0.7rem 0.9rem;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  width: 100%;
+}
+
+#site-search::placeholder {
+  color: var(--astro-paper-muted);
+  opacity: 0.78;
+}
+
+#site-search:hover {
+  border-color: color-mix(in srgb, var(--astro-paper-accent), var(--astro-paper-border) 55%);
+}
+
+#site-search:focus-visible {
+  border-color: var(--astro-paper-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--astro-paper-accent), transparent 82%);
+  outline: none;
+}
+
+[data-theme="mingalaba"][data-color-mode="dark"] #site-search {
+  color-scheme: dark;
 }
 
 .term-grid {
@@ -648,8 +729,7 @@ kbd {
 
   .milestone-timeline {
     --milestone-date-width: 5.2rem;
-    --milestone-gap: 0.48rem;
-    --milestone-marker-column: 0.75rem;
+    --milestone-gap: 0.8rem;
   }
 
   .milestone-date {
@@ -657,9 +737,13 @@ kbd {
     overflow-wrap: anywhere;
   }
 
-  .milestone-marker {
-    height: 0.62rem;
-    width: 0.62rem;
+  .post-navigation {
+    grid-template-columns: 1fr;
+  }
+
+  .post-navigation__link--older {
+    grid-column: 1;
+    text-align: left;
   }
 }
 

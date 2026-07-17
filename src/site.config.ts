@@ -6,5 +6,6 @@ export const site = {
   lang: "zh-CN",
   theme: "mingalaba",
   author: "Kiwi",
-  locale: "zh-CN"
+  locale: "zh-CN",
+  github: "https://github.com/Kiwi-2025"
 } as const;

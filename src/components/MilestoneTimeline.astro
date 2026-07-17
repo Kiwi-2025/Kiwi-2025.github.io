@@ -1,0 +1,28 @@
+---
+interface Milestone {
+  date: Date;
+  text: string;
+}
+
+interface Props {
+  items: Milestone[];
+}
+
+const items = [...Astro.props.items].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+const formatter = new Intl.DateTimeFormat("zh-CN", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit"
+});
+---
+
+<ol class="milestone-timeline">
+  {items.map((item) => (
+    <li>
+      <time class="milestone-date" datetime={item.date.toISOString()}>
+        {formatter.format(item.date)}
+      </time>
+      <p class="milestone-copy">{item.text}</p>
+    </li>
+  ))}
+</ol>

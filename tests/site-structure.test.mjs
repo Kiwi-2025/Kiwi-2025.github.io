@@ -37,7 +37,7 @@ test("math rendering and GitHub Pages deployment are configured", () => {
   assert.match(config, /rehypeKatex/);
   assert.match(config, /sitemap/);
 
-  const layout = readFileSync(join(root, "src/layouts/BaseLayout.astro"), "utf8");
+  const layout = readFileSync(join(root, "src/layouts/BlogPostLayout.astro"), "utf8");
   assert.match(layout, /katex\/dist\/katex\.min\.css/);
 
   const workflow = readFileSync(join(root, ".github/workflows/deploy.yml"), "utf8");
@@ -84,7 +84,7 @@ test("homepage follows the AstroPaper demo layout instead of a large hero", () =
     home,
     /featuredPosts\s*=\s*posts\s*\.filter\(\(post\)\s*=>\s*post\.data\.featured\)\s*\.slice\(0,\s*3\)/
   );
-  assert.match(home, /featuredPosts\.map\(\(post\)\s*=>/);
+  assert.match(home, /<PostList posts=\{featuredPosts\} class="featured-list" \/>/);
   assert.match(home, /featuredPosts\.length\s*>\s*0/);
   assert.doesNotMatch(home, /featuredPost\s*=\s*posts\.find/);
   assert.doesNotMatch(home, /recentPosts\s*=\s*posts\.slice\(1\)/);
@@ -102,21 +102,23 @@ test("homepage follows the AstroPaper demo layout instead of a large hero", () =
 
 test("homepage surfaces milestone updates from the Milestone post", () => {
   const home = readFileSync(join(root, "src/pages/index.astro"), "utf8");
+  const timeline = readFileSync(join(root, "src/components/MilestoneTimeline.astro"), "utf8");
   const milestone = readFileSync(join(root, "src/content/blog/Milestone.md"), "utf8");
 
   assert.match(home, /milestonePost/);
   assert.match(home, /milestoneItems/);
+  assert.match(home, /MilestoneTimeline/);
   assert.match(home, /id="milestone-updates"/);
   assert.match(home, /Milestone/);
   assert.match(home, /\/blog\/milestone\//);
-  assert.match(home, /class="milestone-timeline"/);
-  assert.match(home, /class="milestone-date"/);
-  assert.match(home, /class="milestone-marker"/);
-  assert.match(home, /class="milestone-copy"/);
-  assert.match(home, /formatMilestoneDate/);
-  assert.match(home, /\.reverse\(\)/);
-  assert.match(milestone, /# Milestone/);
-  assert.match(milestone, /^- 2025年1月30日/m);
+  assert.match(timeline, /class="milestone-timeline"/);
+  assert.match(timeline, /class="milestone-date"/);
+  assert.doesNotMatch(timeline, /milestone-marker/);
+  assert.match(timeline, /class="milestone-copy"/);
+  assert.match(timeline, /\.sort\(\(a, b\) => b\.date\.valueOf\(\) - a\.date\.valueOf\(\)\)/);
+  assert.match(milestone, /^milestones:/m);
+  assert.match(milestone, /date: 2025-01-30/);
+  assert.doesNotMatch(milestone, /^#\s+/m);
 });
 
 test("homepage milestone timeline avoids vertical line and item dividers", () => {
@@ -128,6 +130,7 @@ test("homepage milestone timeline avoids vertical line and item dividers", () =>
   assert.doesNotMatch(milestoneCopyBlock, /border-bottom:/);
   assert.doesNotMatch(styles, /\.milestone-timeline::before\s*\{/);
   assert.doesNotMatch(styles, /\.milestone-timeline li::before\s*\{/);
+  assert.doesNotMatch(styles, /\.milestone-marker\s*\{/);
 });
 
 test("static UI chrome is English while document language remains Chinese", () => {
@@ -161,7 +164,13 @@ test("static UI chrome is English while document language remains Chinese", () =
   assert.match(notFound, /Back home/);
 });
 
-test("post listings omit placeholder summaries when description is missing", () => {
+test("shared post listings omit placeholder summaries when description is missing", () => {
+  const postList = readFileSync(join(root, "src/components/PostList.astro"), "utf8");
+  assert.doesNotMatch(postList, /Markdown technical note\./);
+  assert.doesNotMatch(postList, /Latest technical note\./);
+  assert.doesNotMatch(postList, /description\s*\?\?/);
+  assert.match(postList, /data\.description &&/);
+
   for (const file of [
     "src/pages/index.astro",
     "src/pages/blog/index.astro",
@@ -169,10 +178,7 @@ test("post listings omit placeholder summaries when description is missing", () 
     "src/pages/tags/[tag].astro"
   ]) {
     const source = readFileSync(join(root, file), "utf8");
-    assert.doesNotMatch(source, /Markdown technical note\./);
-    assert.doesNotMatch(source, /Latest technical note\./);
-    assert.doesNotMatch(source, /description\s*\?\?/);
-    assert.match(source, /data\.description &&/);
+    assert.match(source, /PostList/);
   }
 });
 
@@ -182,8 +188,7 @@ test("blog index lists all posts without category or tag filters", () => {
   assert.match(blogIndex, /<BaseLayout title="Blog"/);
   assert.match(blogIndex, /<h1>Blog<\/h1>/);
   assert.match(blogIndex, /getAllPosts\(\)/);
-  assert.match(blogIndex, /posts\.map\(\(post\) =>/);
-  assert.match(blogIndex, /href=\{`\/blog\/\$\{slugFromId\(post\.id\)\}\/`\}/);
+  assert.match(blogIndex, /<PostList posts=\{posts\} \/>/);
   assert.doesNotMatch(blogIndex, /data\.tags\.includes/);
   assert.doesNotMatch(blogIndex, /data\.categories\.includes/);
 });
@@ -198,13 +203,13 @@ test("category and tag pages use English chrome but preserve Chinese terms", () 
   assert.match(categories, /<BaseLayout title="Categories"/);
   assert.match(categories, /<h1>Categories<\/h1>/);
   assert.match(categories, /notes<\/small>/);
-  assert.match(categoryDetail, /<BaseLayout title=\{`Category: \$\{label\}`\}/);
+  assert.match(categoryDetail, /title=\{`Category: \$\{label\}`\}/);
   assert.match(categoryDetail, /aria-label="Notes in category"/);
 
   assert.match(tags, /<BaseLayout title="Tags"/);
   assert.match(tags, /<h1>Tags<\/h1>/);
   assert.match(tags, /notes<\/small>/);
-  assert.match(tagDetail, /<BaseLayout title=\{`Tag: \$\{label\}`\}/);
+  assert.match(tagDetail, /title=\{`Tag: \$\{label\}`\}/);
   assert.match(tagDetail, /aria-label="Notes with tag"/);
 
   assert.match(robotics, /categories:\s*\n-\s*机器人学/);
@@ -231,7 +236,7 @@ test("article pages provide a responsive table of contents and reading progress"
   const styles = readFileSync(join(root, "src/styles/global.css"), "utf8");
 
   assert.match(layout, /const \{ Content, headings \} = await render\(post\)/);
-  assert.match(layout, /depth >= 1 && depth <= 3/);
+  assert.match(layout, /depth >= 2 && depth <= 3/);
   assert.match(layout, /article-toc--desktop/);
   assert.match(layout, /<details class="article-toc article-toc--mobile">/);
   assert.match(layout, /On this page/);
@@ -239,6 +244,7 @@ test("article pages provide a responsive table of contents and reading progress"
   assert.match(layout, /aria-valuenow="0"/);
   assert.match(layout, /requestAnimationFrame\(updateReadingState\)/);
   assert.match(layout, /aria-current/);
+  assert.match(layout, /querySelectorAll<HTMLElement>\("h2\[id\], h3\[id\]"\)/);
 
   assert.match(styles, /\.reading-progress\s*\{[\s\S]*height:\s*3px/);
   assert.match(styles, /\.article-toc--desktop\s*\{[\s\S]*display:\s*none/);
@@ -280,7 +286,20 @@ test("Sveltia CMS admin supports mobile GitHub publishing", () => {
   assert.match(cmsConfig, /folder:\s+src\/content\/blog/);
   assert.match(cmsConfig, /create:\s+true/);
   assert.match(cmsConfig, /slug:\s+"\{\{slug\}\}"/);
-  for (const field of ["title", "date", "description", "categories", "tags", "featured", "draft", "body"]) {
+  for (const field of [
+    "title",
+    "date",
+    "description",
+    "updatedDate",
+    "categories",
+    "tags",
+    "featured",
+    "series",
+    "canonicalUrl",
+    "milestones",
+    "draft",
+    "body"
+  ]) {
     assert.match(cmsConfig, new RegExp(`name:\\s+${field}`));
   }
 
@@ -289,6 +308,29 @@ test("Sveltia CMS admin supports mobile GitHub publishing", () => {
   assert.match(readme, /fine-grained personal access token/i);
   assert.match(readme, /public\/images/);
   assert.match(readme, /\/images\//);
+});
+
+test("site does not use generated SVG header or social images", () => {
+  const layout = readFileSync(join(root, "src/layouts/BaseLayout.astro"), "utf8");
+  const config = readFileSync(join(root, "src/site.config.ts"), "utf8");
+
+  assert.equal(existsSync(join(root, "public/favicon.svg")), false);
+  assert.equal(existsSync(join(root, "public/social-card.svg")), false);
+  assert.doesNotMatch(layout, /favicon\.svg|social-card\.svg|og:image|twitter:image/);
+  assert.doesNotMatch(config, /socialImage/);
+});
+
+test("production build forces content refresh after image optimization", () => {
+  const packageJson = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+  const optimizer = readFileSync(join(root, "scripts/optimize-images.mjs"), "utf8");
+  const rehypePlugin = readFileSync(join(root, "src/lib/rehype-optimize-images.mjs"), "utf8");
+
+  assert.match(packageJson.scripts.build, /optimize:images/);
+  assert.match(packageJson.scripts.build, /astro build --force/);
+  assert.match(optimizer, /\.optimized\.webp/);
+  assert.match(rehypePlugin, /node\.properties\.width = image\.width/);
+  assert.match(rehypePlugin, /node\.properties\.height = image\.height/);
+  assert.match(rehypePlugin, /node\.properties\.tabIndex \?\?= 0/);
 });
 
 test("routeLabel decodes valid percent-encoding and falls back for invalid input", () => {

@@ -5,17 +5,27 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "validate:content": "node scripts/validate-content.mjs",
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "build": "npm run validate:content && npm run optimize:images && astro check && astro build --force",
     "preview": "astro preview",
-    "test": "node --test"
+    "test": "node --test",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
+    "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.2.1",
     "astro": "^5.0.0",
+    "gray-matter": "^4.0.3",
     "katex": "^0.16.11",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
+    "sharp": "^0.35.3",
     "typescript": "^5.6.3"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.61.1"
   }
 }

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import { formatDate, getAllPosts, getCategories, routeLabel, slugFromId } from "@/lib/blog";
+import PostList from "@/components/PostList.astro";
+import { getAllPosts, getCategories, routeLabel } from "@/lib/blog";
 
 export async function getStaticPaths() {
   const posts = await getAllPosts();
@@ -14,20 +15,15 @@ const { category, posts } = Astro.props;
 const label = category ?? routeLabel(Astro.params.category);
 ---
 
-<BaseLayout title={`Category: ${label}`}>
+<BaseLayout
+  title={`Category: ${label}`}
+  description={`${label} 分类下的技术笔记与文章，共 ${posts.length} 篇。`}
+>
   <section class="shell page-title">
     <p class="eyebrow">Category</p>
     <h1>{label}</h1>
   </section>
-  <section class="shell post-list" aria-label="Notes in category">
-    {posts.map((post) => (
-      <article class="post-item">
-        <a href={`/blog/${slugFromId(post.id)}/`}>
-            <span>{formatDate(post.data.date)}</span>
-            <strong>{post.data.title}</strong>
-            {post.data.description && <p>{post.data.description}</p>}
-          </a>
-        </article>
-      ))}
+  <section class="shell" aria-label="Notes in category">
+    <PostList posts={posts} />
   </section>
 </BaseLayout>

@@ -5,3 +5,7 @@ dist/
 .preview*.log
 .env
 .env.*
+.cache/
+public/images/*.optimized.webp
+test-results/
+playwright-report/
