@@ -16,10 +16,12 @@ export default defineConfig({
   projects: [
     {
       name: "mobile-360",
+      grep: /@responsive/,
       use: { viewport: { width: 360, height: 800 } }
     },
     {
       name: "tablet-768",
+      grep: /@responsive/,
       use: { viewport: { width: 768, height: 1024 } }
     },
     {

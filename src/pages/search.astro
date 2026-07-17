@@ -1,9 +1,5 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PostList from "@/components/PostList.astro";
-import { getAllPosts } from "@/lib/blog";
-
-const posts = await getAllPosts();
 ---
 
 <BaseLayout title="Search" description="搜索 Kiwi's Blog 的标题、摘要、分类和标签。" noindex>
@@ -13,42 +9,187 @@ const posts = await getAllPosts();
     <label for="site-search">Search titles, summaries, categories, and tags</label>
     <input id="site-search" type="search" placeholder="Try “Optics” or “机器人学”" autocomplete="off" />
     <p class="search-status" aria-live="polite">
-      <span data-search-count>{posts.length}</span> notes
+      <span data-search-status>Enter a keyword to search.</span>
     </p>
   </section>
   <section class="shell search-results" aria-label="Search results">
-    <PostList posts={posts} searchable />
+    <div class="post-list" data-search-results></div>
     <p class="search-empty" hidden>No matching notes. Try a shorter keyword.</p>
+    <p class="search-error" hidden>Search is temporarily unavailable. Please try again.</p>
+    <div class="search-actions">
+      <button class="search-load-more" type="button" hidden>Load more</button>
+    </div>
+    <noscript>
+      <p>Search requires JavaScript. Browse all notes on the <a href="/blog/">Blog page</a>.</p>
+    </noscript>
   </section>
 
   <script>
+    import {
+      SEARCH_PAGE_SIZE,
+      filterSearchPosts,
+      nextVisibleCount,
+      normalizeUrlQuery,
+      prepareSearchPosts
+    } from "@/lib/search.mjs";
+
+    interface SearchPost {
+      title: string;
+      description: string;
+      categories: string[];
+      tags: string[];
+      dateLabel: string;
+      href: string;
+      searchText?: string;
+    }
+
     const input = document.querySelector<HTMLInputElement>("#site-search");
-    const items = Array.from(document.querySelectorAll<HTMLElement>("[data-search-item]"));
-    const count = document.querySelector<HTMLElement>("[data-search-count]");
+    const results = document.querySelector<HTMLElement>("[data-search-results]");
+    const status = document.querySelector<HTMLElement>("[data-search-status]");
     const empty = document.querySelector<HTMLElement>(".search-empty");
+    const error = document.querySelector<HTMLElement>(".search-error");
+    const loadMore = document.querySelector<HTMLButtonElement>(".search-load-more");
 
-    const updateResults = () => {
-      const query = input?.value.trim().toLocaleLowerCase("zh-CN") ?? "";
-      let visible = 0;
+    let indexPromise: Promise<SearchPost[]> | undefined;
+    let currentMatches: SearchPost[] = [];
+    let visibleCount = 0;
+    let debounceTimer: number | undefined;
+    let revision = 0;
 
-      for (const item of items) {
-        const matches = !query || item.dataset.searchText?.includes(query);
-        item.hidden = !matches;
-        if (matches) visible += 1;
+    const setStatus = (message: string) => {
+      if (status) status.textContent = message;
+    };
+
+    const resetMessages = () => {
+      if (empty) empty.hidden = true;
+      if (error) error.hidden = true;
+    };
+
+    const clearResults = () => {
+      results?.replaceChildren();
+      currentMatches = [];
+      visibleCount = 0;
+      if (loadMore) loadMore.hidden = true;
+    };
+
+    const createResult = (post: SearchPost) => {
+      const article = document.createElement("article");
+      article.className = "post-item";
+      article.dataset.searchItem = "true";
+
+      const link = document.createElement("a");
+      link.href = post.href;
+
+      const date = document.createElement("span");
+      date.textContent = post.dateLabel;
+      const title = document.createElement("strong");
+      title.textContent = post.title;
+      link.append(date, title);
+
+      if (post.description) {
+        const description = document.createElement("p");
+        description.textContent = post.description;
+        link.append(description);
       }
 
-      if (count) count.textContent = String(visible);
-      if (empty) empty.hidden = visible !== 0;
+      article.append(link);
+      return article;
+    };
 
+    const renderNextPage = () => {
+      if (!results) return;
+      const nextCount = nextVisibleCount(visibleCount, currentMatches.length, SEARCH_PAGE_SIZE);
+      const fragment = document.createDocumentFragment();
+      for (const post of currentMatches.slice(visibleCount, nextCount)) {
+        fragment.append(createResult(post));
+      }
+      results.append(fragment);
+      visibleCount = nextCount;
+      if (loadMore) loadMore.hidden = visibleCount >= currentMatches.length;
+    };
+
+    const syncUrl = (value: string) => {
+      const query = normalizeUrlQuery(value);
       const url = new URL(window.location.href);
       query ? url.searchParams.set("q", query) : url.searchParams.delete("q");
       window.history.replaceState({}, "", url);
+      return query;
     };
+
+    const loadIndex = () => {
+      if (!indexPromise) {
+        indexPromise = fetch("/search-index.json", {
+          headers: { Accept: "application/json" }
+        }).then(async (response) => {
+          if (!response.ok) throw new Error(`Search index returned ${response.status}`);
+          const payload = await response.json() as { posts?: SearchPost[] };
+          if (!Array.isArray(payload.posts)) throw new Error("Search index is invalid");
+          return prepareSearchPosts(payload.posts) as SearchPost[];
+        }).catch((cause) => {
+          indexPromise = undefined;
+          throw cause;
+        });
+      }
+      return indexPromise;
+    };
+
+    const performSearch = async (query: string, requestRevision: number) => {
+      resetMessages();
+      clearResults();
+      setStatus("Loading search index…");
+
+      try {
+        const posts = await loadIndex();
+        if (requestRevision !== revision) return;
+        currentMatches = filterSearchPosts(posts, query) as SearchPost[];
+
+        if (currentMatches.length === 0) {
+          setStatus("0 notes");
+          if (empty) empty.hidden = false;
+          return;
+        }
+
+        setStatus(`${currentMatches.length} ${currentMatches.length === 1 ? "note" : "notes"}`);
+        renderNextPage();
+      } catch {
+        if (requestRevision !== revision) return;
+        clearResults();
+        setStatus("Search unavailable");
+        if (error) error.hidden = false;
+      }
+    };
+
+    const resetSearch = () => {
+      resetMessages();
+      clearResults();
+      setStatus("Enter a keyword to search.");
+    };
+
+    const scheduleSearch = (value: string, immediate = false) => {
+      const query = syncUrl(value);
+      const requestRevision = ++revision;
+      if (debounceTimer !== undefined) window.clearTimeout(debounceTimer);
+
+      if (!query) {
+        resetSearch();
+        return;
+      }
+
+      if (immediate) {
+        void performSearch(query, requestRevision);
+      } else {
+        debounceTimer = window.setTimeout(() => {
+          void performSearch(query, requestRevision);
+        }, 150);
+      }
+    };
+
+    loadMore?.addEventListener("click", renderNextPage);
 
     if (input) {
       input.value = new URL(window.location.href).searchParams.get("q") ?? "";
-      input.addEventListener("input", updateResults);
-      updateResults();
+      input.addEventListener("input", () => scheduleSearch(input.value));
+      scheduleSearch(input.value, true);
     }
   </script>
 </BaseLayout>

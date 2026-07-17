@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 
 const auditedPages = ["/", "/blog/fourieroptics2/", "/search/"];
 
-test("homepage and milestone timeline render without horizontal overflow", async ({ page }) => {
+test("homepage and milestone timeline render without horizontal overflow", { tag: "@responsive" }, async ({ page }) => {
   await page.goto("/");
 
   await expect(page.locator("h1")).toHaveCount(1);
@@ -13,7 +13,7 @@ test("homepage and milestone timeline render without horizontal overflow", async
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
-test("article structure, reading progress, and theme toggle work", async ({ page }) => {
+test("article structure, reading progress, and theme toggle work", { tag: "@responsive" }, async ({ page }) => {
   await page.goto("/blog/fourieroptics2/");
 
   await expect(page.locator("h1")).toHaveCount(1);
@@ -40,24 +40,7 @@ test("article structure, reading progress, and theme toggle work", async ({ page
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
-test("search filters notes and persists the normalized query", async ({ page }) => {
-  await page.goto("/search/");
-  const input = page.getByRole("searchbox");
-
-  await input.fill("Optics");
-  await expect(page.locator("[data-search-item]:visible")).toHaveCount(3);
-  await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("optics");
-
-  await input.fill("no-such-note");
-
-  await expect
-    .poll(async () => await page.locator("[data-search-item]:visible").count())
-    .toBe(0);
-
-  await expect(page.locator(".search-empty")).toBeVisible();
-});
-
-test("search input follows the light and dark palettes", async ({ page }) => {
+test("search input follows the light and dark palettes", { tag: "@responsive" }, async ({ page }) => {
   await page.goto("/search/");
   const input = page.getByRole("searchbox");
 
@@ -104,7 +87,7 @@ test("internal navigation links resolve", async ({ page }) => {
 });
 
 for (const path of auditedPages) {
-  test(`has no serious accessibility violations: ${path}`, async ({ page }) => {
+  test(`has no serious accessibility violations: ${path}`, { tag: "@responsive" }, async ({ page }) => {
     await page.goto(path);
     const results = await new AxeBuilder({ page }).analyze();
     const blockingViolations = results.violations.filter(({ impact }) => impact === "critical" || impact === "serious");

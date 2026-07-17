@@ -455,6 +455,36 @@ kbd {
   color-scheme: dark;
 }
 
+.search-actions {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.search-load-more {
+  background: var(--astro-paper-surface);
+  border: 1px solid var(--astro-paper-border);
+  border-radius: 8px;
+  color: var(--astro-paper-text);
+  cursor: pointer;
+  font: inherit;
+  min-height: 44px;
+  padding: 0.55rem 1rem;
+}
+
+.search-load-more:hover {
+  background: var(--astro-paper-accent-soft);
+  border-color: var(--astro-paper-accent);
+}
+
+.search-load-more:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--astro-paper-accent), transparent 82%);
+  outline: none;
+}
+
+.search-error {
+  color: var(--astro-paper-accent-strong);
+}
+
 .term-grid {
   display: grid;
   gap: 0;
