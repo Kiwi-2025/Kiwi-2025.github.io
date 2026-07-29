@@ -13,4 +13,6 @@ milestones:
     text: 使用 Sveltia CMS 技术升级，网站正式接入 Sveltia CMS
   - date: 2026-07-17
     text: 网站在部署过程中遇到了 Jekyll 构建失败的问题，在 Cline 的帮助下成功解决
+  - date: 2026-07-29
+    text: 在 Claude Code 的帮助下修复了 description 为空导致部署失败的问题，并移除了会导致构建崩溃的 canonicalUrl 字段
 ---
