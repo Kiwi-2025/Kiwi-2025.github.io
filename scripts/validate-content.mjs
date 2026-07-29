@@ -23,16 +23,12 @@ for (const name of await readdir(contentDir)) {
 
   if (!data.title) errors.push(`${name}: title is required`);
   if (!data.date) errors.push(`${name}: date is required`);
-  if (!data.draft && !data.description) errors.push(`${name}: published posts require a description`);
   if (/^#\s+/m.test(content)) errors.push(`${name}: body headings must start at H2 because the layout supplies H1`);
 
   const publishedAt = data.date ? new Date(data.date) : undefined;
   const updatedAt = data.updatedDate ? new Date(data.updatedDate) : undefined;
   if (publishedAt && updatedAt && updatedAt < publishedAt) {
     errors.push(`${name}: updatedDate cannot be earlier than date`);
-  }
-  if (data.canonicalUrl && !/^https:\/\//i.test(data.canonicalUrl)) {
-    errors.push(`${name}: canonicalUrl must be a complete HTTPS URL`);
   }
 
   if (data.milestones) {

@@ -17,10 +17,10 @@ interface Props {
 const { post, newer, older, relatedPosts = [] } = Astro.props;
 const { Content, headings } = await render(post);
 const tocHeadings = headings.filter(({ depth }) => depth >= 2 && depth <= 3);
-const description = post.data.description ?? `${post.data.title} - ${formatDate(post.data.date)}`;
+const description = post.data.description?.trim() ? post.data.description : "Too Lazy to leave a description";
 const minutes = readingMinutes(post.body ?? "");
 const baseUrl = Astro.site ?? Astro.url.origin;
-const articleUrl = post.data.canonicalUrl ?? new URL(`/blog/${slugFromId(post.id)}/`, baseUrl).href;
+const articleUrl = new URL(`/blog/${slugFromId(post.id)}/`, baseUrl).href;
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",

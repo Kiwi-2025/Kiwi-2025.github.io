@@ -29,12 +29,12 @@ npm run preview
 ## 写文章
 
 - 文章放在 `src/content/blog/`。
-- frontmatter 必填字段：`title`、`date`；发布文章还必须提供非空 `description`。
-- 可选字段：`updatedDate`、`categories`、`tags`、`series`、`canonicalUrl`、`featured`、`draft`、`milestones`。
+- frontmatter 必填字段：`title`、`date`；`description` 为可选，留空时使用默认描述。
+- 可选字段：`updatedDate`、`categories`、`tags`、`series`、`featured`、`draft`、`milestones`。
 - 正文标题从 `##` 开始，页面布局会根据 `title` 自动生成唯一的一级标题。
 - 图片放在 `public/images/`，Markdown 中使用 `/images/example.png`。
 - Markdown 图片必须填写有意义的替代文本，例如 `![实验装置](/images/setup.jpg)`；构建时 JPG/PNG 会生成并使用 WebP。
-- `canonicalUrl` 仅在文章另有 HTTPS 首发地址时填写；`updatedDate` 不得早于 `date`。
+- `updatedDate` 不得早于 `date`。
 - `milestones` 按日期从早到晚保存，首页和 Milestone 文章会自动按从新到旧展示。
 - 行内公式使用 `$...$`，块级公式使用 `$$...$$`。
 - 中文分类和标签可以直接写中文，站点会生成对应静态路径。

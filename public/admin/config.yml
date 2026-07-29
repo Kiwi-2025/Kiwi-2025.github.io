@@ -27,7 +27,7 @@ collections:
         label: Description
         widget: text
         required: false
-        hint: Published posts require a description.
+        hint: Optional. Defaults to "Too Lazy to leave a description" when left empty.
       - name: updatedDate
         label: Updated Date
         widget: datetime
@@ -75,13 +75,6 @@ collections:
         label: Series
         widget: string
         required: false
-      - name: canonicalUrl
-        label: Canonical URL
-        widget: string
-        required: false
-        pattern:
-          - "^https://.+"
-          - Must be a complete HTTPS URL
       - name: milestones
         label: Milestones
         widget: list

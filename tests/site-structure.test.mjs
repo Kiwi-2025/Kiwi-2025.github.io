@@ -295,7 +295,6 @@ test("Sveltia CMS admin supports mobile GitHub publishing", () => {
     "tags",
     "featured",
     "series",
-    "canonicalUrl",
     "milestones",
     "draft",
     "body"

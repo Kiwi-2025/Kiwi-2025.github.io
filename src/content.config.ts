@@ -9,9 +9,6 @@ const blogSchema = z.object({
     description: z.string().optional(),
     updatedDate: z.coerce.date().optional(),
     series: z.string().optional(),
-    canonicalUrl: z.string().url().refine((value) => value.startsWith("https://"), {
-      message: "canonicalUrl must use HTTPS"
-    }).optional(),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
     milestones: z.array(z.object({
