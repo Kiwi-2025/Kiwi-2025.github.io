@@ -10,7 +10,6 @@ tags:
   - 编程
 featured: false
 series: ''
-canonicalUrl: https://kiwi-2025.github.io/my-new-post
 milestones: []
 draft: false
 ---
