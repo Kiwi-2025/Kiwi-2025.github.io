@@ -1,7 +1,7 @@
 ---
-title: My First Vibe Coding Journey
+title: My 1st Vibe Coding Journey
 date: 2026-07-29 10:51:00
-description: ''
+description: 'Vibe Coding and Reflections'
 updatedDate: 2026-07-29 10:51:00
 categories:
   - 工程笔记
