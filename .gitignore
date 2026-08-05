@@ -9,3 +9,7 @@ dist/
 public/images/*.optimized.webp
 test-results/
 playwright-report/
+
+.claude/
+.agents/
+docs/
