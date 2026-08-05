@@ -2,8 +2,12 @@ import { getCollection } from "astro:content";
 
 export type BlogPost = Awaited<ReturnType<typeof getAllPosts>>[number];
 
+// post.id is the path relative to the collection base (e.g. "optics/FourierOptics1").
+// Only the final segment becomes the URL slug so that moving a file into a
+// topic subdirectory does not change its public URL.
 export function slugFromId(id: string) {
-  return id.replace(/\.md$/i, "").replace(/\/index$/i, "");
+  const noExt = id.replace(/\.md$/i, "").replace(/\/index$/i, "");
+  return noExt.split("/").pop()!;
 }
 
 export function routePart(value: string) {
