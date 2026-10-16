@@ -5,7 +5,7 @@ categories:
 - Notes
 tags:
 - Optics
-featured: true
+featured: false
 description: Thin-lens phase, coherent imaging, and the impulse response of a diffraction-limited optical system
 ---
 
